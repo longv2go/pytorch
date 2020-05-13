@@ -171,7 +171,7 @@ void RequestCallbackImpl::processRpc(
         pybind11::gil_scoped_acquire ag;
         serializedPyObj =
             std::make_shared<SerializedPyObj>(pythonRpcHandler.serialize(
-                pythonRpcHandler.runPythonUdf(std::move(upc).movePythonUdf())));
+                pythonRpcHandler.runPythonUdf(upc.pythonUdf())));
       }
       markComplete(
           std::move(PythonResp(std::move(*serializedPyObj))).toMessage());
@@ -281,7 +281,7 @@ void RequestCallbackImpl::processRpc(
         {
           pybind11::gil_scoped_acquire ag;
           py_ivalue = jit::toIValue(
-              pythonRpcHandler.runPythonUdf(std::move(uprc).movePythonUdf()),
+              pythonRpcHandler.runPythonUdf(uprc.pythonUdf()),
               PyObjectType::get());
         }
         ownerRRef->setValue(std::move(py_ivalue));
@@ -549,6 +549,7 @@ std::shared_ptr<FutureMessage> RequestCallbackImpl::processMessage(
   auto& rrefContext = RRefContext::getInstance();
   try {
     rrefContext.recordThreadLocalPendingRRefs();
+    // Deserialize PythonUDF here to trigger RRef unpickling
     std::unique_ptr<RpcCommandBase> rpc = deserializePythonRpcCommand(
         deserializeRequest(request), request.type());
     auto rrefsReadyFuture = rrefContext.waitForThreadLocalPendingRRefs();
