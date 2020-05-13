@@ -4187,7 +4187,7 @@ def run_functional_checks(test_case, test_name, name, apply_fn, run_grad_checks,
 
 # this list corresponds to ops which have separate tests defined for complex dtypes in
 # common_methods_invocations.py
-separate_complex_tests = ['log', 'log10', 'log1p', 'log2', 'reciprocal']
+separate_complex_tests = ['log', 'log10', 'log1p', 'log2', 'reciprocal', 'tan']
 
 # white list for complex
 complex_list = ['t', 'view', 'reshape', 'reshape_as', 'view_as', 'zero_', 'clone',
